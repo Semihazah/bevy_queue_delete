@@ -14,17 +14,13 @@ pub struct BevyQueueDeletePlugin;
 
 impl Plugin for BevyQueueDeletePlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
-        app
-            .register_type::<QueueDelete>()
+        app.register_type::<QueueDelete>()
             .add_system_to_stage(CoreStage::Last, queue_delete_system.label(QueueDelete))
-
             .register_type::<TimerDelete>()
             .add_system(timer_delete_system)
             .add_system(timer_start_fn)
-
             .register_type::<FrameCountDelete>()
-            .add_system(frame_count_delete_system)
-        ;
+            .add_system(frame_count_delete_system);
     }
 }
 
