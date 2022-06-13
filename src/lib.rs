@@ -5,7 +5,7 @@ use bevy::{
     ecs::{reflect::ReflectComponent},
     prelude::{
         Added, Commands, Component, CoreStage, Entity,
-        ParallelSystemDescriptorCoercion, Plugin, Query, Res, SystemLabel, With,
+        Plugin, Query, Res, SystemLabel, With, IntoExclusiveSystem, World, ExclusiveSystemDescriptorCoercion,
     },
     reflect::{FromReflect, Reflect},
 };
@@ -21,7 +21,7 @@ pub struct BevyQueueDeletePlugin;
 impl Plugin for BevyQueueDeletePlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         app.register_type::<QueueDelete>()
-            .add_system_to_stage(CoreStage::Last, queue_delete_system.label(QueueDelete))
+            .add_system_to_stage(CoreStage::Last, queue_delete_system.exclusive_system().label(QueueDelete))
             .register_type::<TimerDelete>()
             .add_system(timer_delete_system)
             .add_system(timer_start_fn)
@@ -44,9 +44,11 @@ impl Plugin for BevyQueueDeletePlugin {
 #[component(storage = "SparseSet")]
 pub struct QueueDelete;
 
-fn queue_delete_system(mut commands: Commands, query: Query<Entity, With<QueueDelete>>) {
-    for entity in query.iter() {
-        commands.entity(entity).despawn();
+fn queue_delete_system(world: &mut World) {
+    let mut query = world.query_filtered::<Entity, With<QueueDelete>>();
+    let delete_entities: Vec<Entity> = query.iter(world).collect();
+    for entity in delete_entities {
+        world.despawn(entity);
     }
 }
 
