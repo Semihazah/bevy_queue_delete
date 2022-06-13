@@ -32,6 +32,8 @@ fn queue_despawn_children(world: &mut World, entity: Entity) {
             queue_despawn_with_children_recursive_inner(world, *e);
         }
     }
+
+    world.entity_mut(entity).insert(QueueDelete);
 }
 
 impl Command for QueueDespawnRecursive {
