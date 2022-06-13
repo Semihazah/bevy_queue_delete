@@ -49,7 +49,7 @@ impl Command for QueueDespawnChildrenRecursive {
 /// Trait that holds functions for inserting QueueDelete recursively down the transform hierarchy
 pub trait QueueDespawnRecursiveExt {
     fn queue_despawn_recursive(&mut self);
-    fn queue_despawn_descendents(&mut self);
+    fn queue_despawn_descendants(&mut self);
 }
 
 impl<'w, 's, 'a> QueueDespawnRecursiveExt for EntityCommands<'w, 's, 'a> {
@@ -58,7 +58,7 @@ impl<'w, 's, 'a> QueueDespawnRecursiveExt for EntityCommands<'w, 's, 'a> {
         self.commands().add(QueueDespawnRecursive(entity));
     }
 
-    fn queue_despawn_descendents(&mut self) {
+    fn queue_despawn_descendants(&mut self) {
         let entity = self.id();
         self.commands().add(QueueDespawnChildrenRecursive(entity));
     }
@@ -73,7 +73,7 @@ impl<'w> QueueDespawnRecursiveExt for EntityMut<'w> {
         }
     }
 
-    fn queue_despawn_descendents(&mut self) {
+    fn queue_despawn_descendants(&mut self) {
         let entity = self.id();
         unsafe {
             queue_despawn_children(self.world_mut(), entity);
